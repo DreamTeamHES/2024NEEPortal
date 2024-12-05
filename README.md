@@ -15,3 +15,5 @@ The project will be managed using **agile software development methodologies** a
 - **CSS**
 - **JavaScript**
 - **C#**
+
+- **testing bug tracking**
