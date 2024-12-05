@@ -1,0 +1,72 @@
+[
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "solar",
+      "coordinates": [ 7.45989, 46.92976 ]
+    },
+    "properties": {
+      "name": "Solar pannel"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "solar",
+      "coordinates": [ 7.55949, 46.12936 ]
+    },
+    "properties": {
+      "name": "Solar pannel"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "wind",
+      "coordinates": [ 7.75929, 46.22946 ]
+    },
+    "properties": {
+      "name": "Wind machine"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "hydro",
+      "coordinates": [ 7.535403, 46.302054 ]
+    },
+    "properties": {
+      "name": "Hydro Turbine"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "wind",
+      "coordinates": [ 7.25789, 46.72979 ]
+    },
+    "properties": {
+      "name": "Wind machine"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "biomass",
+      "coordinates": [ 7.53559, 46.29192 ]
+    },
+    "properties": {
+      "name": "Biomass production"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "biomass",
+      "coordinates": [ 7.74912, 46.02126 ]
+    },
+    "properties": {
+      "name": "Biomass production"
+    }
+  }
+]

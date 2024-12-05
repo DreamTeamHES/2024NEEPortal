@@ -1,0 +1,84 @@
+﻿@page "/smallhydro"
+@using addMap.Services
+@using DBContext.Models2
+@using BlazorBootstrap
+@inject EnergyDataService EnergyDataService
+
+<!-- Titre principal avec style violet -->
+<h3 class="text-center py-4 rounded" style="font-size: 2em; background-color: #712CF9; color: white;">
+    Energieproduktion: Mini-Hydraulisch
+</h3>
+
+<!-- Encadré du graphique avec bordure et ombre violette -->
+<div class="container my-5">
+    <div class="text-center p-4 m-2 border rounded shadow" style="background-color: #f9f9f9; border: 2px solid #712CF9; box-shadow: 0px 4px 8px rgba(113, 44, 249, 0.5);">
+        <div style="position: relative; width: 100%; height: 400px;">
+            <LineChart @ref="lineChart"/>
+        </div>    
+        </div>
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+
+    private LineChartOptions lineChartOptions = new LineChartOptions
+        {
+            Responsive = true,
+            IndexAxis = "x"
+        };
+
+    private ChartData chartData = new ChartData();
+
+    private List<SmallHydro> smallHydroData = new List<SmallHydro>();
+
+    private bool _chartInitialized = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Load data from the service
+            smallHydroData = await EnergyDataService.GetSmallHydroDataAsync();
+
+            // Check if data is retrieved successfully
+            if (smallHydroData?.Any() == true)
+            {
+                chartData.Labels = smallHydroData.Select(d => d.Year.ToString()).ToList();
+                chartData.Datasets = new List<IChartDataset>
+                {
+                    new LineChartDataset
+                    {
+                        Label = "Total Production (kWh)",
+                        Data = smallHydroData.Select(d => (double?)d.Total).ToList(),
+                        BackgroundColor = "rgba(75, 192, 192, 0.2)",
+                        BorderColor = "rgba(75, 192, 192, 1)",
+                        Fill = true
+                    }
+                };
+
+                // Trigger a re-render so OnAfterRenderAsync runs again
+                StateHasChanged();
+            }
+            else
+            {
+                // Handle the case when no data is available
+                // Optionally display a message or initialize with default values
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception and handle it accordingly
+            Console.Error.WriteLine($"Error fetching data: {ex.Message}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_chartInitialized && chartData.Datasets != null && chartData.Datasets.Any())
+        {
+            // Initialize the chart with data and options
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+            _chartInitialized = true;
+        }
+    }
+}

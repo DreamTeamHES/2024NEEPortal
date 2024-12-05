@@ -1,0 +1,72 @@
+﻿@inject NavigationManager NavigationManager
+
+<nav class="breadcrumb">
+    <a href="/" class="breadcrumb-item">Home</a>
+
+    @if (CurrentPage != null)
+    {
+        <span class="breadcrumb-item current">@CurrentPage.Name</span>
+    }
+</nav>
+
+@code {
+    private BreadcrumbItem? CurrentPage; // Page actuelle
+    private List<BreadcrumbItem> Pages = new(); // Liste des pages
+
+    protected override void OnInitialized()
+    {
+        // Initialiser les données
+        InitializeBreadcrumb();
+
+        // S'abonner à l'événement de navigation
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void InitializeBreadcrumb()
+    {
+        // Obtenir l'URL relative actuelle
+        var currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).TrimEnd('/');
+
+        // Définir la liste des pages
+        Pages = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Name = "Home", Url = "" },
+            new BreadcrumbItem { Name = "Mini-Hydraulisch", Url = "smallhydro" },
+            new BreadcrumbItem { Name = "Windenergie", Url = "windenergy" },
+            new BreadcrumbItem { Name = "Biogasanlagen", Url = "biogas" },
+            new BreadcrumbItem { Name = "Photovoltaikanlagen", Url = "photovoltaic" },
+            new BreadcrumbItem { Name = "Installationskarte", Url = "installation" }
+        };
+
+        // Identifier la page actuelle
+        CurrentPage = Pages.FirstOrDefault(page => currentUrl == page.Url);
+
+        // Marquer comme actuelle si une correspondance est trouvée
+        if (CurrentPage != null)
+        {
+            CurrentPage.IsCurrent = true;
+        }
+
+        // Forcer le rendu
+        StateHasChanged();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        // Mettre à jour le fil d'Ariane lors d'un changement de route
+        InitializeBreadcrumb();
+    }
+
+    public void Dispose()
+    {
+        // Se désabonner de l'événement pour éviter les fuites de mémoire
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private class BreadcrumbItem
+    {
+        public string Name { get; set; } = string.Empty; // Nom de la page
+        public string Url { get; set; } = string.Empty; // Chemin relatif
+        public bool IsCurrent { get; set; } // Indique si c'est la page actuelle
+    }
+}

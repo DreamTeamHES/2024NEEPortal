@@ -1,0 +1,161 @@
+﻿@model WebAppNEE.ViewModels.LineChartViewModel
+
+
+<!-- Toggle Buttons for Each Energy Type -->
+<div class="text-center mb-4">
+    <button class="btn btn-primary mx-1" onclick="toggleEnergyType('biogas')">
+        Biogas: @(Model.ShowBiogas ? "Ausblenden" : "Anzeigen")
+    </button>
+    <button class="btn btn-primary mx-1" onclick="toggleEnergyType('photovoltaic')">
+        Photovoltaik: @(Model.ShowPhotovoltaic ? "Ausblenden" : "Anzeigen")
+    </button>
+    <button class="btn btn-primary mx-1" onclick="toggleEnergyType('wind')">
+        Windenergie: @(Model.ShowWind ? "Ausblenden" : "Anzeigen")
+    </button>
+    <button class="btn btn-primary mx-1" onclick="toggleEnergyType('smallhydro')">
+        Mini-Hydraulik: @(Model.ShowSmallHydro ? "Ausblenden" : "Anzeigen")
+    </button>
+</div>
+
+<!-- Chart Container -->
+<div class="chart-container mx-auto" style="max-width: 90%; height: 500px;">
+    <canvas id="energyChart"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+            // Build query string dynamically for toggling energy types
+            function toggleEnergyType(type) {
+                const params = new URLSearchParams({
+                    showBiogas: "@Model.ShowBiogas".toLowerCase() === "true",
+                    showPhotovoltaic: "@Model.ShowPhotovoltaic".toLowerCase() === "true",
+                    showWind: "@Model.ShowWind".toLowerCase() === "true",
+                    showSmallHydro: "@Model.ShowSmallHydro".toLowerCase() === "true"
+                });
+
+                // Adjust casing explicitly for specific types
+                const key = {
+                    biogas: "showBiogas",
+                    photovoltaic: "showPhotovoltaic",
+                    wind: "showWind",
+                    smallhydro: "showSmallHydro"
+                }[type.toLowerCase()];
+
+                // Toggle the specific energy type dynamically
+                params.set(key, params.get(key) === "true" ? "false" : "true");
+
+                // Redirect with updated query parameters
+                window.location.href = `@Url.Action("ToggleHydro", "Energy")?${params.toString()}`;
+            }
+
+            // Helper function to align data with labels
+            function alignData(years, data) {
+                const dataDict = {};
+                data.forEach(d => dataDict[d.Year] = d.Total);
+                return years.map(year => dataDict.hasOwnProperty(year) ? dataDict[year] : null);
+            }
+
+            // Chart Configuration
+            const chartData = {
+                labels: @Html.Raw(Json.Serialize(Model.Years)),
+                datasets: [
+        @if (Model.ShowBiogas)
+        {
+            <text>
+                                    {
+                                        label: "Biogas",
+                                        data: @Html.Raw(Json.Serialize(AlignData(Model.Years, Model.BiogasData))),
+                                        backgroundColor: "rgba(255, 159, 64, 0.2)",
+                                        borderColor: "rgba(255, 159, 64, 1)",
+                                        fill: true,
+                                        spanGaps: false,
+                                    },
+            </text>
+        }
+        @if (Model.ShowPhotovoltaic)
+        {
+            <text>
+                                    {
+                                        label: "Photovoltaik",
+                                        data: @Html.Raw(Json.Serialize(AlignData(Model.Years, Model.PhotovoltaicData))),
+                                        backgroundColor: "rgba(255, 206, 86, 0.2)",
+                                        borderColor: "rgba(255, 206, 86, 1)",
+                                        fill: true,
+                                        spanGaps: false,
+                                    },
+            </text>
+        }
+        @if (Model.ShowWind)
+        {
+            <text>
+                                    {
+                                        label: "Windenergie",
+                                        data: @Html.Raw(Json.Serialize(AlignData(Model.Years, Model.WindData))),
+                                        backgroundColor: "rgba(153, 102, 255, 0.2)",
+                                        borderColor: "rgba(153, 102, 255, 1)",
+                                        fill: true,
+                                        spanGaps: false,
+                                    },
+            </text>
+        }
+        @if (Model.ShowSmallHydro)
+        {
+            <text>
+                                    {
+                                        label: "Mini-Hydraulik",
+                                        data: @Html.Raw(Json.Serialize(AlignData(Model.Years, Model.SmallHydroData))),
+                                        backgroundColor: "rgba(75, 192, 192, 0.2)",
+                                        borderColor: "rgba(75, 192, 192, 1)",
+                                        fill: true,
+                                        spanGaps: false,
+                                    },
+            </text>
+        }
+                ]
+            };
+
+            const config = {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Jahr',
+                            },
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energie total',
+                            },
+                        },
+                    },
+                },
+            };
+
+            // Initialize the Chart
+            const energyChart = new Chart(
+                document.getElementById('energyChart'),
+                config
+            );
+    </script>
+}
+
+@functions {
+    // Helper method to align data with labels
+    List<double?> AlignData(List<int> years, IEnumerable<dynamic> data)
+    {
+        var dataDict = data.ToDictionary(d => d.Year, d => (double?)d.Total);
+        return years.Select(year => dataDict.ContainsKey(year) ? dataDict[year] : null).ToList();
+    }
+}

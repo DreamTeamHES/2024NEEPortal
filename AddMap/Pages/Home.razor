@@ -1,0 +1,51 @@
+﻿@page "/"
+@layout MainLayout
+@using addMap.Charts
+
+
+<PageTitle>Home</PageTitle>
+
+<!-- Titre principal avec style amélioré et couleur violet -->
+<h1 class="text-center py-4 rounded" style="font-size: 2em; background-color: #712CF9; color: white;">
+    Portal der neuen erneuerbaren Energien im Wallis
+</h1>
+
+<!-- Section d'introduction avec texte en violet -->
+<section class="text-center my-4 container">
+    <p style="font-size: 1.2em; color: #000000;">
+        Willkommen auf der neuen Webseite für erneuerbare Energien im Wallis. Hier finden Sie alle Informationen zu den neuesten Projekten und Entwicklungen im Bereich der erneuerbaren Energien im Wallis.
+    </p>
+</section>
+
+<!-- Bouton avec lien jaune et guide -->
+<div style="display: flex; flex-direction: column; align-items: flex-end; margin-right: 20px;">
+    <!-- Image cliquable pour NER Detail -->
+    <a href="/NERDetail">
+        <img src="ressources/NERDetails.png"
+             alt="NER Detail"
+             style="width: 50px; cursor: pointer;" />
+    </a>
+
+    <!-- Guide utilisateur -->
+    <div style="margin-top: 10px; border: 2px solid #ff0000; padding: 10px; display: inline-block; background-color: #fffbe6;">
+        <p style="margin: 0; font-size: 0.9em;">
+            Klicken Sie auf die Knöpfe mit einem gelben Link, um durch das System zu navigieren.
+        </p>
+    </div>
+</div>
+
+<!-- Line Chart -->
+<div style="display: flex; justify-content: center;">
+    <ToggleHydro />
+</div>
+
+
+@code {
+    private void NavigateToNERDetail()
+    {
+        NavigationManager.NavigateTo("/NERDetail");
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+}

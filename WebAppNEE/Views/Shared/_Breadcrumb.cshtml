@@ -1,0 +1,55 @@
+﻿@using WebAppNEE.Helpers
+
+@{
+    // Get the current controller and action names
+    var controllerName = ViewContext.RouteData.Values["controller"].ToString();
+    var actionName = ViewContext.RouteData.Values["action"].ToString();
+
+    // Generate breadcrumbs using your helper
+    var breadcrumbItems = BreadcrumbHelper.GenerateBreadcrumb(ViewContext.HttpContext, controllerName, actionName);
+
+    // Ensure Home and Energy pages are always included
+    if (!breadcrumbItems.Any(b => b.Name == "Home"))
+    {
+        breadcrumbItems.Insert(0, new BreadcrumbItem { Name = "Home", Url = Url.Action("Index", "Home") });
+    }
+
+    if (controllerName == "Energy" && !breadcrumbItems.Any(b => b.Name == "Energy"))
+    {
+        breadcrumbItems.Add(new BreadcrumbItem { Name = "Energie", Url = Url.Action("Index", "Energy") });
+    }
+
+    // Add logic for new pages
+    if (controllerName == "Energy")
+    {
+        switch (actionName)
+        {
+            case "Biogas":
+                breadcrumbItems.Add(new BreadcrumbItem { Name = "Biogas", Url = Url.Action("Biogas", "Energy") });
+                break;
+            case "SmallHydro":
+                breadcrumbItems.Add(new BreadcrumbItem { Name = "Mini Hydro", Url = Url.Action("SmallHydro", "Energy") });
+                break;
+            case "SolarPannel":
+                breadcrumbItems.Add(new BreadcrumbItem { Name = "Photovoltaik", Url = Url.Action("SolarPannel", "Energy") });
+                break;
+            case "WindMill":
+                breadcrumbItems.Add(new BreadcrumbItem { Name = "Windmaschine", Url = Url.Action("WindMill", "Energy") });
+                break;
+        }
+    }
+}
+
+<nav class="breadcrumb">
+    @foreach (var item in breadcrumbItems)
+    {
+        if (item.Url == ViewContext.HttpContext.Request.Path) // Current page
+        {
+            <span class="breadcrumb-item current">@item.Name</span>
+        }
+        else
+        {
+            <a href="@item.Url" class="breadcrumb-item">@item.Name</a>
+        }
+    }
+</nav>

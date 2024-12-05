@@ -1,0 +1,69 @@
+﻿@using BlazorBootstrap
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
+
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Energieportal Wallis"
+             DataProvider="SidebarDataProvider" />
+
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end" style="background-color: #f8f9fa; padding: 8px 16px;">
+            <a href="https://www.vs.ch/" target="_blank" style="color: #000000; font-size: 1.1em;">
+                <i class="fas fa-info-circle"></i> Über Wallis
+            </a>
+        </div>
+
+        <!-- Fil d'Ariane, affiché uniquement si ce n'est pas la page d'accueil -->
+        <CustomBreadcrumb />
+
+        <article class="content px-4">
+            <div class="py-2">@Body</div>
+        </article>
+
+    </main>
+
+</div>
+
+@code {
+    private Sidebar sidebar;
+    private IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+            new NavItem { Id = "2", Href = "/smallhydro", IconName = IconName.DropletFill, Text = "Mini-Hydraulisch" },
+            new NavItem { Id = "3", Href = "/windenergy", IconName = IconName.Wind, Text = "Windenergie" },
+            new NavItem { Id = "4", Href = "/biogas", IconName = IconName.BatteryCharging, Text = "Biogasanlagen" },
+            new NavItem { Id = "5", Href = "/photovoltaic", IconName = IconName.SunFill, Text = "Photovoltaikanlagen" },
+            new NavItem { Id = "6", Href = "/installation", IconName = IconName.Globe, Text = "Installationskarte"}
+        };
+
+        return navItems;
+    }
+
+    private bool IsHomePage()
+    {
+        return NavigationManager.Uri == NavigationManager.BaseUri;
+    }
+}
+
+<div id="blazor-error-ui">
+    Ein unerwarteter Fehler ist aufgetreten.
+    <a href="" class="reload">Neu laden</a>
+    <a class="dismiss">🗙</a>
+</div>

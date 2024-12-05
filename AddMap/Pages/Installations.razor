@@ -1,0 +1,51 @@
+﻿@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+@page "/installation"
+@layout MainLayout
+
+@using System.Drawing
+@using LeafletForBlazor.RealTime.geometry.analysis
+
+<PageTitle>Installations</PageTitle>
+
+<h1>Installations</h1>
+
+<div id="map" style="width: 100%; height: calc(100vh - 100px);"></div>
+
+@code{
+
+    private IJSObjectReference? module;
+    private string? result;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var client = new HttpClient();
+                var raw = await client.GetStringAsync("https://installationapi2024.azurewebsites.net/api/ElectricityProductionPlants");
+                raw = raw.Replace('\n', ' ');
+                module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./leafletmap.js");
+                if(module != null)
+                {
+                    result = await module.InvokeAsync<string>("load_map", Convert.ToString(raw));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"An error occurred: {e.Message}");
+            }
+            
+        }
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module != null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+
+}

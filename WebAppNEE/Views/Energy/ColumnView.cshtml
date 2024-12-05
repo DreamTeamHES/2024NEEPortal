@@ -1,0 +1,220 @@
+﻿@model WebAppNEE.ViewModels.ColumnChartViewModel
+
+@{
+    // Extract data for each energy type and find the maximum total value
+    var recentSmallHydroData = Model.SmallHydroData.OrderByDescending(d => d.Year).Take(2).ToList();
+    var recentWindData = Model.WindData.OrderByDescending(d => d.Year).Take(2).ToList();
+    var recentBiogasData = Model.BiogasData.OrderByDescending(d => d.Year).Take(2).ToList();
+    var recentPhotovoltaicData = Model.PhotovoltaicData.OrderByDescending(d => d.Year).Take(2).ToList();
+
+    var smallHydroTotals = recentSmallHydroData.Select(d => d.Total).ToList();
+    var windTotals = recentWindData.Select(d => d.Total).ToList();
+    var biogasTotals = recentBiogasData.Select(d => d.Total).ToList();
+    var photovoltaicTotals = recentPhotovoltaicData.Select(d => d.Total).ToList();
+
+    // Find the maximum total value among all energies
+    var maxTotal = new[] { smallHydroTotals.Max(), windTotals.Max(), biogasTotals.Max(), photovoltaicTotals.Max() }.Max();
+}
+
+<div class="container">
+    <div class="nee-menu">
+        <div class="grid-container">
+
+            <div class="grid-item">
+                <a href="/Energy/SolarPannel" class="btn btn-light shadow-lg square-button">
+                    <img src="~/Ressources/SolarPannel.svg" class="img-fluid mb-2" alt="Photovoltaik" />
+                    <p>PV</p>
+                </a>
+            </div>
+            <div class="grid-item">
+                <a href="/Energy/SmallHydro" class="btn btn-light shadow-lg square-button">
+                    <img src="~/Ressources/WaterDam.svg" class="img-fluid mb-2" alt="mini-hydr" />
+                    <p>Mini-hydro</p>
+                </a>
+            </div>
+            <div class="grid-item">
+                <a href="/Energy/WindMill" class="btn btn-light shadow-lg square-button">
+                    <img src="~/Ressources/WindMill.svg" class="img-fluid mb-2" alt="Windmaschine" />
+                    <p>Windmaschine</p>
+                </a>
+            </div>
+            <div class="grid-item">
+                <a href="/Energy/Biogas" class="btn btn-light shadow-lg square-button">
+                    <img src="~/Ressources/Biomass.svg" class="img-fluid mb-2" alt="Biogas" />
+                    <p>Bio-gas</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chart-container">
+    <div class="chart-item">
+        <h2>Small Hydro Data</h2>
+        <canvas id="smallHydroChart" width="200" height="200"></canvas>
+        <img src="~/Ressources/WaterDam.svg" alt="Small Hydro" class="chart-image">
+    </div>
+    <div class="chart-item">
+        <h2>Wind Data</h2>
+        <canvas id="windChart" width="200" height="200"></canvas>
+        <img src="~/Ressources/WindMill.svg" alt="Wind" class="chart-image">
+    </div>
+    <div class="chart-item">
+        <h2>Biogas Data</h2>
+        <canvas id="biogasChart" width="200" height="200"></canvas>
+        <img src="~/Ressources/Biomass.svg" alt="Biomass" class="chart-image">
+    </div>
+    <div class="chart-item">
+        <h2>Photovoltaic Data</h2>
+        <canvas id="photovoltaicChart" width="200" height="200"></canvas>
+        <img src="~/Ressources/SolarPannel.svg" alt="Photovoltaic" class="chart-image">
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.square-button').forEach(button => {
+        button.addEventListener('click', function () {
+            // Remove the 'selected' class from all buttons
+            document.querySelectorAll('.square-button').forEach(btn => btn.classList.remove('noborder'));
+
+            // Add the 'selected' class to the clicked button
+            this.classList.add('noborder');
+        });
+    });
+</script>
+
+
+<!-- Load Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Maximum Y-axis value
+    var maxTotal = @Html.Raw(Json.Serialize(maxTotal));
+
+    // Small Hydro Chart
+    var smallHydroYears = @Html.Raw(Json.Serialize(recentSmallHydroData.Select(d => d.Year).ToList()));
+    var smallHydroTotals = @Html.Raw(Json.Serialize(smallHydroTotals));
+    var ctxSmallHydro = document.getElementById('smallHydroChart').getContext('2d');
+    new Chart(ctxSmallHydro, {
+        type: 'bar',
+        data: {
+            labels: smallHydroYears,
+            datasets: [{
+                label: 'Small Hydro Energy Total',
+                data: smallHydroTotals,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: maxTotal // Set maximum Y-axis value
+                }
+            }
+        }
+    });
+
+    // Wind Chart
+    var windYears = @Html.Raw(Json.Serialize(recentWindData.Select(d => d.Year).ToList()));
+    var windTotals = @Html.Raw(Json.Serialize(windTotals));
+    var ctxWind = document.getElementById('windChart').getContext('2d');
+    new Chart(ctxWind, {
+        type: 'bar',
+        data: {
+            labels: windYears,
+            datasets: [{
+                label: 'Wind Energy Total',
+                data: windTotals,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: maxTotal // Set maximum Y-axis value
+                }
+            }
+        }
+    });
+
+    // Biogas Chart
+    var biogasYears = @Html.Raw(Json.Serialize(recentBiogasData.Select(d => d.Year).ToList()));
+    var biogasTotals = @Html.Raw(Json.Serialize(biogasTotals));
+    var ctxBiogas = document.getElementById('biogasChart').getContext('2d');
+    new Chart(ctxBiogas, {
+        type: 'bar',
+        data: {
+            labels: biogasYears,
+            datasets: [{
+                label: 'Biogas Energy Total',
+                data: biogasTotals,
+                backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: maxTotal // Set maximum Y-axis value
+                }
+            }
+        }
+    });
+
+    // Photovoltaic Chart
+    var photovoltaicYears = @Html.Raw(Json.Serialize(recentPhotovoltaicData.Select(d => d.Year).ToList()));
+    var photovoltaicTotals = @Html.Raw(Json.Serialize(photovoltaicTotals));
+    var ctxPhotovoltaic = document.getElementById('photovoltaicChart').getContext('2d');
+    new Chart(ctxPhotovoltaic, {
+        type: 'bar',
+        data: {
+            labels: photovoltaicYears,
+            datasets: [{
+                label: 'Photovoltaic Energy Total',
+                data: photovoltaicTotals,
+                backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                borderColor: 'rgba(255, 159, 64, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: maxTotal // Set maximum Y-axis value
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+    .chart-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap; /* Allows wrapping if space is limited */
+        gap: 20px;
+    }
+    .chart-item {
+        margin: 10px;
+        flex: 1;
+        min-width: 250px; /* Adjust as needed */
+        text-align: center;
+    }
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+    .chart-image {
+        max-width: 100px; /* Adjust the size of the image */
+        margin-top: 10px;
+    }
+</style>

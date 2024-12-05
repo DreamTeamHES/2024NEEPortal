@@ -1,0 +1,123 @@
+﻿@using DBContext.Models2
+@using BlazorBootstrap
+@inject EnergyDataService EnergyDataService
+
+<!-- Main Title with improved style -->
+<h3 class="text-center py-4 rounded" style="font-size: 2em; background-color: #712CF9; color: white;">
+    Energieproduktion: Vergleich der Energiearten
+</h3>
+
+<!-- Chart Container with border and shadow -->
+<div class="container my-5">
+    <div class="text-center p-4 m-2 border rounded shadow" style="background-color: #f9f9f9; border: 2px solid #712CF9; box-shadow: 0px 4px 8px rgba(113, 44, 249, 0.5);">
+        <div style="position: relative; width: 100%; height: 400px;">
+            <LineChart @ref="lineChart" />
+        </div>
+        <!-- Toggle Button -->
+        <button class="btn btn-primary mt-3" @onclick="ToggleMiniHydraulic">
+            @(_showMiniHydraulic ? "Mini-Hydraulik ausblenden" : "Mini-Hydraulik anzeigen")
+        </button>
+    </div>
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = new LineChartOptions
+        {
+            Responsive = true,
+            IndexAxis = "x"
+        };
+    private ChartData chartData = new ChartData();
+    private bool _chartInitialized = false;
+    private bool _showMiniHydraulic = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var windData = await EnergyDataService.GetWindDataAsync();
+            var biogasData = await EnergyDataService.GetBiogasDataAsync();
+            var photovoltaicData = await EnergyDataService.GetPhotovoltaicDataAsync();
+
+            if (windData != null && biogasData != null && photovoltaicData != null)
+            {
+                chartData.Labels = windData.Select(d => d.Year.ToString()).ToList();
+
+                chartData.Datasets = new List<IChartDataset>
+                {
+                    new LineChartDataset
+                    {
+                        Label = "Biogas",
+                        Data = biogasData.Select(d => (double?)d.Total).ToList(),
+                        BackgroundColor = "rgba(255, 159, 64, 0.2)",
+                        BorderColor = "rgba(255, 159, 64, 1)",
+                        Fill = true
+                    },
+                    new LineChartDataset
+                    {
+                        Label = "Photovoltaik",
+                        Data = photovoltaicData.Select(d => (double?)d.Total).ToList(),
+                        BackgroundColor = "rgba(255, 206, 86, 0.2)",
+                        BorderColor = "rgba(255, 206, 86, 1)",
+                        Fill = true
+                    },
+                    new LineChartDataset
+                    {
+                        Label = "Windenergie",
+                        Data = windData.Select(d => (double?)d.Total).ToList(),
+                        BackgroundColor = "rgba(153, 102, 255, 0.2)",
+                        BorderColor = "rgba(153, 102, 255, 1)",
+                        Fill = true
+                    }
+                };
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching data: {ex.Message}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_chartInitialized && chartData.Datasets != null && chartData.Datasets.Any())
+        {
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+            _chartInitialized = true;
+        }
+    }
+
+    private async Task ToggleMiniHydraulic()
+    {
+        _showMiniHydraulic = !_showMiniHydraulic;
+
+        if (_showMiniHydraulic)
+        {
+            var smallHydroData = await EnergyDataService.GetSmallHydroDataAsync();
+
+            if (smallHydroData != null)
+            {
+                chartData.Datasets.Add(new LineChartDataset
+                    {
+                        Label = "Mini-Hydraulik",
+                        Data = smallHydroData.Select(d => (double?)d.Total).ToList(),
+                        BackgroundColor = "rgba(75, 192, 192, 0.2)",
+                        BorderColor = "rgba(75, 192, 192, 1)",
+                        Fill = true
+                    });
+            }
+        }
+        else
+        {
+            // Filter out the Mini-Hydraulik dataset by casting to LineChartDataset
+            chartData.Datasets = chartData.Datasets
+                .Where(d => !(d is LineChartDataset dataset && dataset.Label == "Mini-Hydraulik"))
+                .ToList();
+        }
+
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+}

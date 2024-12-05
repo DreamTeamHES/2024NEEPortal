@@ -1,0 +1,8 @@
+﻿namespace addMap.Models;
+
+public class MainCategoryCatalogueM
+{
+    public string CatalogueId { get; set; } = null!;
+
+    public string? De { get; set; }
+}

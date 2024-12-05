@@ -1,0 +1,142 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.breadcrumb {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.text-right {
+    text-align: right;
+    margin-right: 20px;
+}
+
+    .text-right img {
+        cursor: pointer;
+        width: 150px;
+    }
+
+    .text-right div {
+        background-color: #fffbe6;
+        border: 2px solid red;
+        padding: 10px;
+        display: inline-block;
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    .text-right a img {
+        border: 2px solid yellow;
+    }
+
+        .text-right a img:hover {
+            border: none;
+        }
+
+.breadcrumb-item {
+    text-decoration: none;
+    color: #007bff;
+}
+
+    .breadcrumb-item.current {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .breadcrumb-item:hover {
+        text-decoration: underline;
+    }
+
+.btn img {
+    max-height: 100px;
+    width: auto;
+    margin: 0 auto;
+    display: block;
+}
+
+.btn p {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.nee-menu {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row-reverse;
+    justify-content: end;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+/* Grid container to enforce 2x2 layout */
+.grid-container {
+    max-width: 20%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 10px;
+    row-gap: 10px;
+}
+
+.square-button {
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Center the content vertically */
+    align-items: center; /* Center the content horizontally */
+    text-align: center;
+    padding: 10px;
+    border: 2px solid yellow;
+    transition: border-color 0.3s ease;
+}
+
+    .square-button img {
+        max-height: 50px;
+        width: auto;
+        margin-bottom: 5px;
+    }
+
+    .square-button p {
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #333;
+        margin: 0;
+    }
+
+    /* Remove the yellow border when the class 'no-border' is applied */
+    .square-button.noborder {
+        border-color: white; 
+    }
+
+    .square-button:hover {
+        border-color: lightgray;
+    }
+
+    .square-button img {
+        max-width: 100%;
+        height: auto;
+    }
