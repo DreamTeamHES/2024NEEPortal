@@ -49,17 +49,47 @@ jobs:
           path: build/artifacts
           destination: drop
 
-  deploy:
+deploy:
     executor: dotnet-executor
     steps:
       - checkout
       - run:
+          name: Configure Git
+          command: |
+            git config --global user.email "circleci@yourdomain.com"
+            git config --global user.name "CircleCI Deployment"
+      - run:
           name: Deploy WebAppNEE via Git
           command: |
+            cd build/artifacts/WebAppNEE
             git init
-            git remote add azure https://addmap.scm.azurewebsites.net:443/addMap.git
+            git remote add azure https://nerdetails.scm.azurewebsites.net:443/nerdetails.git
             git add .
             git commit -m "Deploy WebAppNEE"
+            git push azure master --force
+          environment:
+            GIT_HTTP_USER: $AZURE_GIT_USERNAME
+            GIT_HTTP_PASSWORD: $AZURE_GIT_PASSWORD
+      - run:
+          name: Deploy InstallationAPI via Git
+          command: |
+            cd build/artifacts/InstallationAPI
+            git init
+            git remote add azure https://installationapi2024.scm.azurewebsites.net:443/InstallationAPI2024.git
+            git add .
+            git commit -m "Deploy InstallationAPI"
+            git push azure master --force
+          environment:
+            GIT_HTTP_USER: $AZURE_GIT_USERNAME
+            GIT_HTTP_PASSWORD: $AZURE_GIT_PASSWORD
+      - run:
+          name: Deploy AddMap via Git
+          command: |
+            cd build/artifacts/AddMap
+            git init
+            git remote add azure https://addmap.scm.azurewebsites.net:443/addmap.git
+            git add .
+            git commit -m "Deploy AddMap"
             git push azure master --force
           environment:
             GIT_HTTP_USER: $AZURE_GIT_USERNAME
