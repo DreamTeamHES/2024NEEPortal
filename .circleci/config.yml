@@ -3,7 +3,7 @@ version: 2.1
 executors:
   windows:
     machine:
-      image: windows-latest
+      image: windows
 
 jobs:
   build:
