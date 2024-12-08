@@ -1,50 +1,24 @@
 version: 2.1
 
-executors:
-  windows:
-    machine:
-      image: windows
-
 jobs:
   build:
-    executor: windows
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0 # .NET SDK 8.x image
     steps:
       - checkout
       - run:
-          name: Install NuGet
-          command: choco install nuget -y
-      - run:
-          name: Install .NET SDK
-          command: |
-            choco install dotnet-sdk --version=8.x
-            refreshenv
-      - run:
           name: Restore NuGet Packages
-          command: |
-            dotnet restore **/WebAppNEE.csproj
+          command: dotnet restore **/WebAppNEE.csproj
       - run:
           name: Build Solution
-          command: |
-            dotnet build **/WebAppNEE.csproj --configuration Release
+          command: dotnet build **/WebAppNEE.csproj --configuration Release
       - run:
           name: Publish Application
-          command: |
-            dotnet publish **/WebAppNEE.csproj --configuration Release --output publish
+          command: dotnet publish **/WebAppNEE.csproj --configuration Release --output publish
       - persist_to_workspace:
           root: publish
           paths:
             - .
-
-  deploy:
-    executor: windows
-    steps:
-      - attach_workspace:
-          at: /workspace
-      - run:
-          name: Deploy to Azure
-          command: |
-            az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
-            az webapp deployment source config-zip --resource-group $AZURE_RESOURCE_GROUP --name neemvcapp --src /workspace/*.zip
 
 workflows:
   version: 2
