@@ -14,17 +14,17 @@ jobs:
           name: Restore NuGet Packages
           command: dotnet restore "WebAppNEE.sln"
       - run:
+          name: Publish Symbols
+          command: |
+            find . -type f -name "*.pdb" -exec cp {} build/symbols/ \; || true
+      - run:
           name: Publish WebAppNEE
           command: |
             dotnet publish WebAppNEE/WebAppNEE.csproj \
               --configuration Release \
               --output build/artifacts/WebAppNEE
       - run:
-          name: Publish Symbols
-          command: |
-            find . -type f -name "*.pdb" -exec cp {} build/symbols/ \; || true
-      - run:
-          name: Build InstallationAPI
+          name: Publish InstallationAPI
           command: |
             dotnet publish InstallationAPI/InstallationAPI.csproj \
               --configuration Release \
@@ -32,7 +32,7 @@ jobs:
       - run:
           name: Publish AddMap
           command: |
-            dotnet publish AddMap/AddMap.csproj \
+            dotnet publish AddMap/addMap.csproj \
               --configuration Release \
               --output build/artifacts/AddMap
       - run:
