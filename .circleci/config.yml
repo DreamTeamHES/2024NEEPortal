@@ -56,7 +56,7 @@ jobs:
       executor: dotnet-executor
       steps:
         - attach_workspace:
-          at: build/artifacts
+            at: build/artifacts
         - run:
             name: Configure Git
             command: |
