@@ -1,27 +1,56 @@
 version: 2.1
 
+executors:
+  dotnet-executor:
+    docker:
+      - image: mcr.microsoft.com/dotnet/sdk:8.0 # Use .NET SDK 8.x Docker image
+
 jobs:
   build:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:8.0 # .NET SDK 8.x image
+    executor: dotnet-executor
     steps:
       - checkout
       - run:
           name: Restore NuGet Packages
-          command: dotnet restore **/WebAppNEE.csproj
+          command: dotnet restore "**/*.sln"
+      - run:
+          name: Publish WebAppNEE
+          command: |
+            dotnet publish WebAppNEE/WebAppNEE.csproj \
+              --configuration Release \
+              --output build/artifacts/WebAppNEE
+      - run:
+          name: Publish Symbols
+          command: |
+            find . -type f -name "*.pdb" -exec cp {} build/symbols/ \; || true
+      - run:
+          name: Build InstallationAPI
+          command: |
+            dotnet publish InstallationAPI/InstallationAPI.csproj \
+              --configuration Release \
+              --output build/artifacts/InstallationAPI
+      - run:
+          name: Publish AddMap
+          command: |
+            dotnet publish AddMap/AddMap.csproj \
+              --configuration Release \
+              --output build/artifacts/AddMap
+      - run:
+          name: Copy Files
+          command: |
+            mkdir -p build/copy
+            cp -r **/bin/Release/* build/copy/
       - run:
           name: Build Solution
-          command: dotnet build **/WebAppNEE.csproj --configuration Release
-      - run:
-          name: Publish Application
-          command: dotnet publish **/WebAppNEE.csproj --configuration Release --output publish
-      - persist_to_workspace:
-          root: publish
-          paths:
-            - .
+          command: |
+            dotnet build "**/*.sln" \
+              --configuration Release
+      - store_artifacts:
+          path: build/artifacts
+          destination: drop
 
 workflows:
   version: 2
-  build:
+  build-and-publish:
     jobs:
       - build
