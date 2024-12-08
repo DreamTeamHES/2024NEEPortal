@@ -53,38 +53,17 @@ jobs:
     executor: dotnet-executor
     steps:
       - checkout
-      - run:
-          name: Install Azure CLI
+     - run:
+          name: Deploy WebAppNEE via Git
           command: |
-            curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-      - run:
-          name: Login to Azure
-          command: |
-            az login -u $AZURE_USERNAME -p $AZURE_PASSWORD
-      - run:
-          name: Set Subscription
-          command: az account set --subscription $AZURE_SUBSCRIPTION_ID
-      - run:
-          name: Deploy InstallationAPI
-          command: |
-            az webapp deployment source config-zip \
-              --resource-group $AZURE_RESOURCE_GROUP \
-              --name InstallationAPI2024 \
-              --src-path build/artifacts/InstallationAPI
-      - run:
-          name: Deploy AddMap
-          command: |
-            az webapp deployment source config-zip \
-              --resource-group $AZURE_RESOURCE_GROUP \
-              --name addMap \
-              --src-path build/artifacts/AddMap
-      - run:
-          name: Deploy WebAppNEE
-          command: |
-            az webapp deployment source config-zip \
-              --resource-group $AZURE_RESOURCE_GROUP \
-              --name nerdetails \
-              --src-path build/artifacts/WebAppNEE
+            git init
+            git remote add azure https://addmap.scm.azurewebsites.net:443/addMap.git
+            git add .
+            git commit -m "Deploy WebAppNEE"
+            git push azure master --force
+          environment:
+            GIT_HTTP_USER: $AZURE_GIT_USERNAME
+            GIT_HTTP_PASSWORD: $AZURE_GIT_PASSWORD
 
 workflows:
   version: 2
