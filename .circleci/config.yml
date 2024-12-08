@@ -67,37 +67,28 @@ jobs:
             command: |
               cd build/artifacts/WebAppNEE
               git init
-              git remote add azure https://nerdetails.scm.azurewebsites.net:443/nerdetails.git
+              git remote add azure https://$LOCAL_GIT_USERNAME_NER:$LOCAL_GIT_PASSWORD_NER@nerdetails.scm.azurewebsites.net:443/nerdetails.git
               git add .
               git commit -m "Deploy WebAppNEE"
               git push azure master --force
-            environment:
-              GIT_HTTP_USER: $LOCAL_GIT_USERNAME_NER
-              GIT_HTTP_PASSWORD: $LOCAL_GIT_PASSWORD_NER
         - run:
             name: Deploy InstallationAPI via Git
             command: |
               cd build/artifacts/InstallationAPI
               git init
-              git remote add azure https://installationapi2024.scm.azurewebsites.net:443/InstallationAPI2024.git
+              git remote add azure https://$LOCAL_GIT_USERNAME_API:$LOCAL_GIT_PASSWORD_API@installationapi2024.scm.azurewebsites.net:443/InstallationAPI2024.git
               git add .
               git commit -m "Deploy InstallationAPI"
               git push azure master --force
-            environment:
-              GIT_HTTP_USER: $LOCAL_GIT_USERNAME_API
-              GIT_HTTP_PASSWORD: $LOCAL_GIT_PASSWORD_API
         - run:
             name: Deploy AddMap via Git
             command: |
               cd build/artifacts/AddMap
               git init
-              git remote add azure https://addmap.scm.azurewebsites.net:443/addmap.git
+              git remote add azure https://$LOCAL_GIT_USERNAME_ADDMAP:$LOCAL_GIT_PASSWORD_ADDMAP@addmap.scm.azurewebsites.net:443/addmap.git
               git add .
               git commit -m "Deploy AddMap"
               git push azure master --force
-            environment:
-              GIT_HTTP_USER: $LOCAL_GIT_USERNAME_ADDMAP
-              GIT_HTTP_PASSWORD: $LOCAL_GIT_PASSWORD_ADDMAP
 
 workflows:
   version: 2
