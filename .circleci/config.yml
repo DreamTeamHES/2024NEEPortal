@@ -49,8 +49,49 @@ jobs:
           path: build/artifacts
           destination: drop
 
+  deploy:
+    executor: dotnet-executor
+    steps:
+      - checkout
+      - run:
+          name: Install Azure CLI
+          command: |
+            curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+      - run:
+          name: Login to Azure
+          command: |
+            az login -u $AZURE_USERNAME -p $AZURE_PASSWORD
+      - run:
+          name: Set Subscription
+          command: az account set --subscription $AZURE_SUBSCRIPTION_ID
+      - run:
+          name: Deploy InstallationAPI
+          command: |
+            az webapp deployment source config-zip \
+              --resource-group $AZURE_RESOURCE_GROUP \
+              --name InstallationAPI2024 \
+              --src-path build/artifacts/InstallationAPI
+      - run:
+          name: Deploy AddMap
+          command: |
+            az webapp deployment source config-zip \
+              --resource-group $AZURE_RESOURCE_GROUP \
+              --name addMap \
+              --src-path build/artifacts/AddMap
+      - run:
+          name: Deploy WebAppNEE
+          command: |
+            az webapp deployment source config-zip \
+              --resource-group $AZURE_RESOURCE_GROUP \
+              --name nerdetails \
+              --src-path build/artifacts/WebAppNEE
+
 workflows:
   version: 2
-  build-and-publish:
+  build-and-deploy:
     jobs:
       - build
+      - deploy:
+          requires:
+            - build
+
