@@ -45,14 +45,18 @@ jobs:
           command: |
             dotnet build "WebAppNEE.sln" \
               --configuration Release
-      - store_artifacts:
-          path: build/artifacts
-          destination: drop
+      - persist_to_workspace:
+          root: build/artifacts
+          paths:
+            - WebAppNEE
+            - InstallationAPI
+            - AddMap
 
   deploy:
       executor: dotnet-executor
       steps:
-        - checkout
+        - attach_workspace:
+          at: build/artifacts
         - run:
             name: Configure Git
             command: |
