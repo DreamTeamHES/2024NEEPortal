@@ -67,7 +67,7 @@ jobs:
             command: |
               cd build/artifacts/WebAppNEE
               git init
-              git remote add azure https://$LOCAL_GIT_USERNAME_NER:$LOCAL_GIT_PASSWORD_NER@nerdetails.scm.azurewebsites.net:443/nerdetails.git
+              git remote add azure https://$USERNAME:$PASSWORD@nerdetails.scm.azurewebsites.net:443/nerdetails.git
               git add .
               git commit -m "Deploy WebAppNEE"
               git push azure master --force
@@ -76,7 +76,7 @@ jobs:
             command: |
               cd build/artifacts/InstallationAPI
               git init
-              git remote add azure https://$LOCAL_GIT_USERNAME_API:$LOCAL_GIT_PASSWORD_API@installationapi2024.scm.azurewebsites.net:443/InstallationAPI2024.git
+              git remote add azure https://$USERNAME:$PASSWORD@installationapi2024.scm.azurewebsites.net:443/InstallationAPI2024.git
               git add .
               git commit -m "Deploy InstallationAPI"
               git push azure master --force
@@ -85,7 +85,7 @@ jobs:
             command: |
               cd build/artifacts/AddMap
               git init
-              git remote add azure https://$LOCAL_GIT_USERNAME_ADDMAP:$LOCAL_GIT_PASSWORD_ADDMAP@addmap.scm.azurewebsites.net:443/addmap.git
+              git remote add azure https://$USERNAME:$PASSWORD@addmap.scm.azurewebsites.net:443/addmap.git
               git add .
               git commit -m "Deploy AddMap"
               git push azure master --force
