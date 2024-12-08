@@ -3,7 +3,7 @@ version: 2.1
 executors:
   windows:
     machine:
-      image: windows-server-2022
+      image: windows-latest
 
 jobs:
   build:
