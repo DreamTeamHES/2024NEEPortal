@@ -72,8 +72,8 @@ jobs:
               git commit -m "Deploy WebAppNEE"
               git push azure master --force
             environment:
-              GIT_HTTP_USER: $AZURE_GIT_USERNAME
-              GIT_HTTP_PASSWORD: $AZURE_GIT_PASSWORD
+              GIT_HTTP_USER: $LOCAL_GIT_USERNAME_NER
+              GIT_HTTP_PASSWORD: $LOCAL_GIT_PASSWORD_NER
         - run:
             name: Deploy InstallationAPI via Git
             command: |
@@ -84,8 +84,8 @@ jobs:
               git commit -m "Deploy InstallationAPI"
               git push azure master --force
             environment:
-              GIT_HTTP_USER: $AZURE_GIT_USERNAME
-              GIT_HTTP_PASSWORD: $AZURE_GIT_PASSWORD
+              GIT_HTTP_USER: $LOCAL_GIT_USERNAME_API
+              GIT_HTTP_PASSWORD: $LOCAL_GIT_PASSWORD_API
         - run:
             name: Deploy AddMap via Git
             command: |
@@ -96,8 +96,8 @@ jobs:
               git commit -m "Deploy AddMap"
               git push azure master --force
             environment:
-              GIT_HTTP_USER: $AZURE_GIT_USERNAME
-              GIT_HTTP_PASSWORD: $AZURE_GIT_PASSWORD
+              GIT_HTTP_USER: $LOCAL_GIT_USERNAME_ADDMAP
+              GIT_HTTP_PASSWORD: $LOCAL_GIT_PASSWORD_ADDMAP
 
 workflows:
   version: 2
