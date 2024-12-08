@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run:
           name: Restore NuGet Packages
-          command: dotnet restore "**/*.sln"
+          command: dotnet restore "WebAppNEE.sln"
       - run:
           name: Publish WebAppNEE
           command: |
@@ -43,7 +43,7 @@ jobs:
       - run:
           name: Build Solution
           command: |
-            dotnet build "**/*.sln" \
+            dotnet build "WebAppNEE.sln" \
               --configuration Release
       - store_artifacts:
           path: build/artifacts
