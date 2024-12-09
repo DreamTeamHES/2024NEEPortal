@@ -6,6 +6,7 @@ executors:
       - image: mcr.microsoft.com/dotnet/sdk:8.0 # Use .NET SDK 8.x Docker image
 
 jobs:
+  # Regular build job for CI
   build:
     executor: dotnet-executor
     steps:
@@ -49,8 +50,34 @@ jobs:
           path: build/artifacts
           destination: drop
 
+  # Nightly build job (only builds the solution)
+  nightly-build:
+    executor: dotnet-executor
+    steps:
+      - checkout
+      - run:
+          name: Restore NuGet Packages
+          command: dotnet restore "WebAppNEE.sln"
+      - run:
+          name: Build Solution
+          command: dotnet build "WebAppNEE.sln" --configuration Release
+
 workflows:
   version: 2
+
+  # Regular CI workflow for commits
   build-and-publish:
     jobs:
       - build
+
+  # Nightly build workflow
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 2 * * *" # Run nightly build at 2 AM UTC daily
+          filters:
+            branches:
+              only:
+                - dev # Only trigger for the dev branch
+    jobs:
+      - nightly-build
